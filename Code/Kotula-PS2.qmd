@@ -122,6 +122,8 @@ ggplot(data = big_eaters, aes(x = candy_pieces))+
 
 ### Summary Statistics for age and g_candy_consumed
 
+find mean and standard deviation of both variables using the `mean()` and `sd()` functions nested inside a `summarise()` function
+
 ```{r}
 Halloween |>
   group_by(sugar_high) |>
@@ -133,6 +135,8 @@ Halloween |>
 ```
 
 ### Recreate the boxplot 
+
+create a boxplot with `geom_boxplot()` and overlay a `geom_point()`
 
 ```{r}
 ggplot(data = Halloween, aes(x = Costume_type,
