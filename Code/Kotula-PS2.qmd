@@ -1,0 +1,151 @@
+---
+title: "Kotula-PS2"
+format: html
+---
+
+### Set Up
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(here)
+```
+
+read in the data and examine using 2 functions
+
+```{r}
+Halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+
+str(Halloween)
+glimpse(Halloween)
+```
+
+### Assign appropriate data types for the data
+
+Costume_type should be a factor with 3 levels: Not scary, Uncertain, and Scary
+
+sugar_high should be a factor with 2 levels: Yes and No
+
+```{r}
+Halloween$Costume_type <- as.factor(Halloween$Costume_type)
+levels(Halloween$Costume_type) 
+
+Halloween$sugar_high <- as.factor(Halloween$sugar_high)
+levels(Halloween$sugar_high)
+```
+
+### Fix the factor levels and data entry inconsistencies
+
+Now both variables are factors, but there are too many levels so they must be fixed.
+
+```{r}
+fix <- which(Halloween$Costume_type %in% c("not scary",
+                                           "Not scary",
+                                           "notscary"))
+
+Halloween$Costume_type[fix] <- "Not scary"
+Halloween$Costume_type <- factor(Halloween$Costume_type)
+
+fix2 <- which(Halloween$Costume_type %in% c("scaly",
+                                           "scary",
+                                           "Scary",
+                                           "scary "))
+
+Halloween$Costume_type[fix2] <- "Scary"
+Halloween$Costume_type <- factor(Halloween$Costume_type)
+
+levels(Halloween$Costume_type) #now Costume_type has 3 levels
+
+fix3 <- which(Halloween$sugar_high %in% c("no",
+                                          "No",
+                                          "NO"))
+
+Halloween$sugar_high[fix3] <- "No"
+Halloween$sugar_high <- factor(Halloween$sugar_high)
+
+fix4 <- which(Halloween$sugar_high %in% c("yes", "Yes"))
+Halloween$sugar_high[fix4] <- "Yes"
+Halloween$sugar_high <- factor(Halloween$sugar_high)
+
+levels(Halloween$sugar_high) #Now sugar_high has 2 levels
+```
+
+The costume variable also has some naming inconsistencies so that needs fixed too.
+
+```{r}
+fix5 <- which(Halloween$costume == "Princess")
+Halloween$costume[fix5] <- "princess"
+
+fix6 <- which(Halloween$costume == "Unicorn")
+Halloween$costume[fix6] <- "unicorn"
+
+fix7 <- which(Halloween$costume == "Witch")
+Halloween$costume[fix7] <- "witch"
+
+fix8 <- which(Halloween$costume == "Zombie")
+Halloween$costume[fix8] <- "zombie"
+```
+
+now all repeat costumes have consistently capitalized names
+
+### Make a scatterplot of min_temp_trick_treat_C vs. age
+
+```{r}
+ggplot(Halloween, aes(x = age,
+                      y = min_temp_trick_treat_C,
+                      color = Costume_type,
+                      shape = Costume_type))+
+  geom_point(size = 4)+
+  xlab("Age of trick-or-treater (years)")+
+  ylab("Minimum temperature while out (C)")+
+  theme_bw()
+```
+
+### Recreate the second plot
+
+Isolate data for children who are 10+ and consumed 100g+ of Halloween candy
+
+```{r}
+#isolate the data
+big_eaters <- Halloween |>
+  filter(age >= 10, g_candy_consumed >= 100)
+```
+
+Plot a histogram showing the a count of the number of kids who each ate certain numbers of pieces of candy.
+
+```{r}
+ggplot(data = big_eaters, aes(x = candy_pieces))+
+  geom_histogram()+
+  xlab("Number of candy pieces eaten")+
+  ylab("Count")
+```
+
+### Summary Statistics for age and g_candy_consumed
+
+find mean and standard deviation of both variables using the `mean()` and `sd()` functions nested inside a `summarise()` function
+
+```{r}
+Halloween |>
+  group_by(sugar_high) |>
+  summarise(mean_age = mean(age),
+            sd_age = sd(age),
+            mean_g_candy_consumed = mean(g_candy_consumed),
+            sd_g_candy_consumed = sd(g_candy_consumed)) |>
+  View()
+```
+
+### Recreate the boxplot 
+
+create a boxplot with `geom_boxplot()` and overlay a `geom_point()`
+
+```{r}
+ggplot(data = Halloween, aes(x = Costume_type,
+                             y = g_candy_consumed))+
+  geom_boxplot()+
+  geom_point(color = "orange", alpha = 0.7)+
+  facet_wrap(~sugar_high)+
+  xlab("Costume type")+
+  ylab("Amount of candy consumed (g)")+
+  theme_bw()
+  
+```
