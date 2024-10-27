@@ -1,0 +1,128 @@
+---
+title: "Augustine-PS2.qmd."
+author: "Christopher Augustine"
+format: html
+editor: visual
+---
+
+setting things up 
+```{r}
+rm(list=ls())
+library(tidyverse)
+library(here)
+```
+reading in the data
+```{r}
+halloween<-read.csv(here("data", "Halloween_data_PS2.csv"))
+```
+
+using 2 function to examine that data
+```{r}
+glimpse(halloween)
+summary(halloween)
+```
+fixing the data 
+```{r}
+halloween<- halloween %>%
+  mutate(
+  costume=as.factor(costume), 
+  Costume_type=as.factor(Costume_type),
+  sugar_high=as.factor(sugar_high))
+```
+
+```{r}
+levels(halloween$costume)
+levels(halloween$sugar_high)
+levels(halloween$Costume_type)
+```
+fixing the differences in names in data
+```{r}
+fix_witch <- which(halloween$costume %in% c("witch", "Witch", "witch "))
+halloween$costume[fix_witch] <- "witch"
+
+fix_zombie <- which(halloween$costume %in% c("zombie", "Zombie"))
+halloween$costume[fix_zombie] <- "zombie"
+
+fix_unicorn <- which(halloween$costume %in% c("unicorn", "Unicorn"))
+halloween$costume[fix_unicorn] <- "unicorn"
+
+fix_not_scary <- which(halloween$Costume_type %in% c("not scary", "Not scary", "notscary"))
+halloween$Costume_type[fix_not_scary] <- "not scary"
+
+fix_scary <- which(halloween$Costume_type %in% c("scaly","scary","Scary","scary "))
+halloween$Costume_type[fix_scary] <- "scary"
+
+fix_no <- which(halloween$sugar_high %in% c("no", "No", "NO"))
+halloween$sugar_high[fix_no] <- "no"
+
+fix_yes <- which(halloween$sugar_high %in% c("yes", "Yes"))
+halloween$sugar_high[fix_yes] <- "yes"
+
+#to update levels
+halloween$costume<- factor(halloween$costume)
+halloween$Costume_type<- factor(halloween$Costume_type)
+halloween$sugar_high<- factor(halloween$sugar_high)
+```
+
+task #7 making a scatterplot to look like the one provided, using min_temp_trick_treat_C to show temperature and viewing that across age 
+```{r}
+ggplot(halloween, aes(x = age, y = min_temp_trick_treat_C)) +
+  geom_point(aes(color = Costume_type, shape = Costume_type), size = 3, alpha = 0.7)  +  
+  labs(
+    x = "Age of trick-or-treater (years)",
+    y = "Minimum temperature while out (C)",
+  ) +
+  theme_bw() 
+```
+task #8 filtering out 10 year old and older who ate 100 g or more of candy and making a histogram to match the one provided 
+
+```{r}
+candygoblins <- halloween %>%
+  filter(age >= 10, g_candy_consumed >= 100)
+```
+
+
+```{r}
+ggplot(candygoblins, aes(x = candy_pieces)) +
+  geom_histogram(binwidth = .5, alpha = 1.0) +
+  labs(
+    x = "Number of candy pieces eaten",
+    y = "Count"
+  ) +
+  theme_minimal() 
+```
+task 9:
+summary statics of age and grams of candy consumed showing standard deviation and means then viewing in another tab 
+```{r}
+halloween %>%
+  group_by(sugar_high) %>%
+  summarize(
+    mean_age = mean(age, na.rm = TRUE),
+    sd_age = sd(age, na.rm = TRUE),
+    mean_g_candy = mean(g_candy_consumed, na.rm = TRUE),
+    sd_grams_candy = sd(g_candy_consumed, na.rm = TRUE)
+  ) %>%
+  View()
+```
+
+task 10 
+A box and whisker plot showing amount of candy consumed by children with scary, not scary, and uncertain costume types and wether that child got a sugar high from candy eaten
+```{r}
+ggplot(halloween, aes(x = Costume_type, y = g_candy_consumed)) +
+  geom_boxplot(alpha = 0.7, outlier.color = "orange")+
+    geom_jitter(color = "orange", width = 0.0, size = 2.5, alpha = 0.8)+
+  labs(
+    x = "Costume Type",
+    y = "Amount of candy consumed (g)"
+  ) +
+  facet_wrap(~ sugar_high)
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),  
+    legend.position = "none"  
+    #i added this because for some reason it was adding a legend that was messing other things up, guessing its a settings issue but it made the graph look like the one in the document
+  )
+```
+
+task 13
+I will be the yellow Teletubbie with 3 of my friends so not scary.    
