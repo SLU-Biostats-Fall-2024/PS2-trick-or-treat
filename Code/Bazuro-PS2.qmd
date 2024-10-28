@@ -1,0 +1,61 @@
+---
+title: "Bazuro-PS2"
+author: "Andrew Bazuro"
+format: html
+editor: visual
+---
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(here)
+Halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+```
+
+Examine the dataset with at least two functions
+
+```{r}
+glimpse(Halloween)
+view(Halloween)
+```
+
+Assign data types that would be appropriate
+```{r}
+Halloween$costume <- as.factor(Halloween$costume)
+Halloween$costume_type <- as.factor(Halloween$Costume_type)
+Halloween$candy_consumed_g <- Halloween$g_candy_consumed
+Halloween$sugar_high <- as.factor(Halloween$sugar_high)
+
+Halloween <- Halloween |> select(-Costume_type)
+Halloween <- Halloween |> select(-g_candy_consumed)
+glimpse(Halloween)
+```
+Fix any errors you find in the dataset
+
+```{r}
+##Hello Professor! This is where the issue I was having is. I have attempted to replace all of the misspelled/miscapitalized "witch" but none of them are replacing.
+
+#Sample to show that I know how to rename individual cases via biostatistics method
+levels(Halloween$costume)
+Halloween$costume[3]
+
+fix <- which(Halloween$costume %in% c("Witch", "witch", "witch "))
+
+Halloween$costume[fix] <- "witch"
+
+levels(Halloween$costume)
+
+#use of str_to_lower() for efficiency (I know that some of these are proper nounts but for ease of use I will be lowercasing everything.)
+Halloween <- Halloween |> mutate(costume = str_to_lower(costume))
+
+Halloween$costume <- as.factor(Halloween$costume)
+levels(Halloween$costume)
+
+##sugar_high
+levels(Halloween$sugar_high)
+fix2 <- which(Halloween$sugar_high %in% c("no", "No", "NO"))
+
+Halloween$sugar_high[fix2] <- "no"
+levels(Halloween$sugar_high)
+```
+
