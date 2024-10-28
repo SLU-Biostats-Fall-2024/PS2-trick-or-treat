@@ -35,27 +35,65 @@ Fix any errors you find in the dataset
 ```{r}
 ##Hello Professor! This is where the issue I was having is. I have attempted to replace all of the misspelled/miscapitalized "witch" but none of them are replacing.
 
+#edit: I have continued working and if I use stringr afterwards it completely works and does what both are supposed to do. I don't know why this part doesn't work on its own.
+
 #Sample to show that I know how to rename individual cases via biostatistics method
 levels(Halloween$costume)
-Halloween$costume[3]
 
 fix <- which(Halloween$costume %in% c("Witch", "witch", "witch "))
 
 Halloween$costume[fix] <- "witch"
 
 levels(Halloween$costume)
+```
 
-#use of str_to_lower() for efficiency (I know that some of these are proper nounts but for ease of use I will be lowercasing everything.)
-Halloween <- Halloween |> mutate(costume = str_to_lower(costume))
+
+```{r}
+#use of str_to_lower() for efficiency (I know that some of these are proper noun's but for ease of use I will be lowercasing everything.)
+Halloween <- Halloween |> 
+  mutate(costume = str_to_lower(costume))
 
 Halloween$costume <- as.factor(Halloween$costume)
+
 levels(Halloween$costume)
+```
 
+```{r}
 ##sugar_high
-levels(Halloween$sugar_high)
-fix2 <- which(Halloween$sugar_high %in% c("no", "No", "NO"))
+Halloween <- Halloween |> 
+  mutate(sugar_high = str_to_lower(sugar_high))
 
-Halloween$sugar_high[fix2] <- "no"
+Halloween$sugar_high <- as.factor(Halloween$sugar_high)
+
 levels(Halloween$sugar_high)
 ```
+```{r}
+##costume_type
+fix <- which(Halloween$costume_type %in% c("not scary", "notscary"))
+
+Halloween$costume_type[fix] <- "not scary"
+
+fix <- which(Halloween$costume_type %in% c("scary", "scary ", "scaly"))
+
+Halloween$costume_type[fix] <- "scary"
+
+levels(Halloween$costume_type)
+##stringr for costume_type
+Halloween <- Halloween |> 
+  mutate(costume_type = str_to_lower((costume_type)))
+
+Halloween$costume_type <- as.factor(Halloween$costume_type)
+
+levels(Halloween$costume_type)
+```
+
+Create a scatterplot of min_temp_trick vs age
+```{r}
+ggplot(data = Halloween, aes(x = age, y = min_temp_trick_treat_C)) +
+  geom_point()
+```
+```{r}
+
+```
+
 
