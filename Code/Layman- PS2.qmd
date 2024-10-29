@@ -85,7 +85,24 @@ Next calculate some summary statistics that show the mean and standard deviation
 
 ```{r}
 halloween %>% 
-  group_by (sugar_high)%>%
-    
-    
+       group_by (sugar_high)%>%
+       summarise(
+        mean_age = mean(age),
+        sd_age = sd (age),
+        mean_candy = mean(g_candy_consumed),
+        sd_candy = sd(g_candy_consumed)
+        )
+
+```
+
+10\. Next, write code that replicates figure 3 below as closely as you can.
+
+```{r}
+ggplot (halloween, aes (x=Costume_type,y=g_candy_consumed))+
+  geom_boxplot() + # makes a boxplot
+  geom_point(size=2,colour='orange',alpha=1)+ 
+  facet_wrap(~sugar_high, nrow=1)+
+  xlab("Costume type") + #xaxis label
+  ylab("Amount of candy consumed (g)")+ #yaxis label
+  theme_bw()
 ```
