@@ -5,6 +5,8 @@ format: html
 editor: visual
 ---
 
+Clear environment, read in packages, and load in dataset.
+
 ```{r}
 rm(list = ls())
 library(tidyverse)
@@ -12,14 +14,16 @@ library(here)
 Halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
 ```
 
-Examine the dataset with at least two functions
+Examine the dataset with at least two functions. I chose to use glimpse to get a look at each of the data types and head to get a view of what the first few rows look like in each section. I also ran a view() to open the Halloween dataset in a new tab for a closer look for mistakes.
 
 ```{r}
 glimpse(Halloween)
+head(Halloween)
 view(Halloween)
 ```
 
-Assign data types that would be appropriate
+Assign data types that would be appropriate. Here I chose to set costume, costume_type, and sugar_high as factor variables as they were each categorical and nominal (aside from sugar_high which was binary). I also renamed the g_candy_consumed as candy_consumed_g so that the unit was at the end and made Costume_type lowercase so it was consistent with the rest.
+
 ```{r}
 Halloween$costume <- as.factor(Halloween$costume)
 Halloween$costume_type <- as.factor(Halloween$Costume_type)
@@ -30,14 +34,10 @@ Halloween <- Halloween |> select(-Costume_type)
 Halloween <- Halloween |> select(-g_candy_consumed)
 glimpse(Halloween)
 ```
-Fix any errors you find in the dataset
+
+Fix any errors you find in the dataset. There were several issues in each of the nominal/binary variables. The first I changed was the costume variable where I removed the space after several cases and made them lowercase wherever possible (unless there was only uppercase examples. If there were I didn't touch it as I wasn't sure if they were meant to be capitalized or left as lowercase.)
 
 ```{r}
-##Hello Professor! This is where the issue I was having is. I have attempted to replace all of the misspelled/miscapitalized "witch" but none of them are replacing.
-
-#edit: I have continued working and if I use stringr afterwards it completely works and does what both are supposed to do. I don't know why this part doesn't work on its own.
-
-#Sample to show that I know how to rename individual cases via biostatistics method
 levels(Halloween$costume)
 
 fix <- which(Halloween$costume %in% c("Witch", "witch", "witch "))
@@ -45,63 +45,117 @@ fix <- which(Halloween$costume %in% c("Witch", "witch", "witch "))
 Halloween$costume[fix] <- "witch"
 
 levels(Halloween$costume)
-```
 
+fix <- which(Halloween$costume %in% c("zombie", "Zombie"))
 
-```{r}
-#use of str_to_lower() for efficiency (I know that some of these are proper noun's but for ease of use I will be lowercasing everything.)
-Halloween <- Halloween |> 
-  mutate(costume = str_to_lower(costume))
+Halloween$costume[fix] <- "zombie"
 
-Halloween$costume <- as.factor(Halloween$costume)
+fix <- which(Halloween$costume %in% c("unicorn", "Unicorn"))
+
+Halloween$costume[fix] <- "unicorn"
+
+fix <- which(Halloween$costume %in% c("princess", "Princess"))
+
+Halloween$costume[fix] <- "princess"
 
 levels(Halloween$costume)
+##all data is set to either capital or lowercase, if the only sample was capital I left it capital as it may have been a proper noun and was meant to be capitalized.
 ```
+
+This is an example of some stringr code I used when I had issues with the method shown above (solved by reloading in the dataset and avoiding use of the levels() function. Instead I chose to rely on using the above view() function to see if the variables actually changed.
+
+```{r}
+#use of str_to_lower() for efficiency (This would set all proper nouns to lowercase as well but would effectively fix the capitalization in this case. Code is only left here as an example. This would also allow us to change any variables which were only shown in their capitalized form without creating an NA value (such as Rabbit or Mermaid).
+
+#Halloween <- Halloween |> 
+  #mutate(costume = str_to_lower(costume))
+
+#Halloween$costume <- as.factor(Halloween$costume)
+
+#levels(Halloween$costume)
+```
+
+Changes to the sugar_high dataset so that all "no's were equal to no and all "yes's" were equal to yes.
 
 ```{r}
 ##sugar_high
-Halloween <- Halloween |> 
-  mutate(sugar_high = str_to_lower(sugar_high))
-
-Halloween$sugar_high <- as.factor(Halloween$sugar_high)
-
 levels(Halloween$sugar_high)
+
+fix <- which(Halloween$sugar_high %in% c("no", "No", "NO"))
+
+Halloween$sugar_high[fix] <- "no"
+
+fix <- which(Halloween$sugar_high %in% c("yes", "Yes"))
+
+Halloween$sugar_high[fix] <- "yes"
 ```
+
+Changes to the costume_type variable so that all factor levels were capitalized for the future graphs and so that they matched the Uncertain level which I couldn't lowercase using the in class method.
+
 ```{r}
 ##costume_type
-fix <- which(Halloween$costume_type %in% c("not scary", "notscary"))
+fix <- which(Halloween$costume_type %in% c("not scary", "notscary", "Not scary"))
 
-Halloween$costume_type[fix] <- "not scary"
+Halloween$costume_type[fix] <- "Not scary"
 
-fix <- which(Halloween$costume_type %in% c("scary", "scary ", "scaly"))
+fix <- which(Halloween$costume_type %in% c("scary", "scary ", "scaly", "Scary"))
 
-Halloween$costume_type[fix] <- "scary"
-
-levels(Halloween$costume_type)
-##stringr for costume_type
-Halloween <- Halloween |> 
-  mutate(costume_type = str_to_lower((costume_type)))
-
-Halloween$costume_type <- as.factor(Halloween$costume_type)
+Halloween$costume_type[fix] <- "Scary"
 
 levels(Halloween$costume_type)
+##These are capitalized to match with Uncertain and to match with the plots.
 ```
 
-Create a scatter plot of min_temp_trick vs age
+Create a scatter plot of min_temp_trick vs age which mimics the one in the assignment. Here I used geom_point to make the scatterplot and increased the size to 5 so that it matched. I chose to use costume_type for both the shape and colour and used theme_bw() to add a border and change the background to white. I also renamed both axes.
+
 ```{r}
 ggplot(data = Halloween, aes(x = age, y = min_temp_trick_treat_C, shape = costume_type, colour = costume_type)) +
   geom_point(size = 5) +
   xlab('Age of trick-or-treater (years)') +
   ylab('Minimum temperature while out (C)') +
   theme_bw()
+##Figure 1. Minimum temperature that kids will trick-or-treat before going home as a function of each child's age and costume type.
 ```
+
 Isolate the data for children who are 10 years old or older and who consumed 100 or more grams of halloween candy. Use the resulting data to plot a histogram showing the count of the number of kids who each ate certain numbers of pieces of candy.
+
+Here I first filtered for the chosen criteria (age \>= 10 and candy_consumed_g \>= 100) and then grouped by the number of candy eaten by each trick_or_treater before summarizes through the use of length(). I didn't change the theme as the image had the base theme.
+
 ```{r}
 Halloween_plot8 <- Halloween |> filter(age >= 10 & candy_consumed_g >= 100) |> group_by(candy_pieces) |> summarise(Count = length(candy_pieces))
 
 ggplot(data = Halloween_plot8, aes(x = candy_pieces, y = Count)) +
   geom_col(width = 0.5, just = 0) +
   xlab('Number of candy pieces eaten')
+
+##Figure 2. Count of number of children (age 10 and older who consuemd at least 100 grams of candy) eating different numbers of pieces of candy.
 ```
 
+Here I calcuated some summary statistics for those who experienced a sugar high. I first grouped by sugar_high and then summarised for the mean and std dev for the age and candy_consumed_g variable to see the average age, and average candy consumed in grams for those who were under a sugar high and those who weren't.
 
+```{r}
+Halloween |> group_by(sugar_high) |> summarise(meanage = mean(age, na.rm = T),
+                                               sdage = sd(age, na.rm = T),
+                                               meanconsume = mean(candy_consumed_g, na.rm = T),
+                                               sdconsume = sd(candy_consumed_g, na.rm = T)) |>
+  view()
+```
+
+Create the following figure:
+
+Here I set the x as costume_type to match the Not scary, Scary, and Uncertain boxplots shown in the image. I then set the y as candy_consumed_g and faceted by sugar_high as it is the only binary variable and the image shows a yes and no facet. I then added a geom_point() to show all the points on the image (while coloring it orange). I then renamed the axes and set the theme to theme_bw()
+
+```{r}
+ggplot(data = Halloween, aes(x = costume_type, y = candy_consumed_g)) +
+  geom_boxplot() +
+  geom_point(color = 'orange') +
+  facet_wrap(~sugar_high) +
+  theme_bw() +
+  ylab('Amount of candy consumed (g)') +
+  xlab('Costume type')
+##Figure 3. Box and whisker plot showing the amount of candy consumed by children wearing different types of Halloween cosume spearated according to whether the child experienced a resulting sugar high ("no" vs "yes") 
+```
+
+Commit changes and submit a pull request.
+
+My costume will probably not be scary (in past years I was Link from the Legends of Zelda, a Giraffe, and a Skier) although I will almost certainly get a sugar high.
