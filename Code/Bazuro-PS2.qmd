@@ -87,13 +87,21 @@ Halloween$costume_type <- as.factor(Halloween$costume_type)
 levels(Halloween$costume_type)
 ```
 
-Create a scatterplot of min_temp_trick vs age
+Create a scatter plot of min_temp_trick vs age
 ```{r}
-ggplot(data = Halloween, aes(x = age, y = min_temp_trick_treat_C)) +
-  geom_point()
+ggplot(data = Halloween, aes(x = age, y = min_temp_trick_treat_C, shape = costume_type, colour = costume_type)) +
+  geom_point(size = 5) +
+  xlab('Age of trick-or-treater (years)') +
+  ylab('Minimum temperature while out (C)') +
+  theme_bw()
 ```
+Isolate the data for children who are 10 years old or older and who consumed 100 or more grams of halloween candy. Use the resulting data to plot a histogram showing the count of the number of kids who each ate certain numbers of pieces of candy.
 ```{r}
+Halloween_plot8 <- Halloween |> filter(age >= 10 & candy_consumed_g >= 100) |> group_by(candy_pieces) |> summarise(Count = length(candy_pieces))
 
+ggplot(data = Halloween_plot8, aes(x = candy_pieces, y = Count)) +
+  geom_col(width = 0.5, just = 0) +
+  xlab('Number of candy pieces eaten')
 ```
 
 
