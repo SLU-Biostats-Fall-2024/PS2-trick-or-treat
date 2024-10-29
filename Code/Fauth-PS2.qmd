@@ -19,25 +19,23 @@ Load in the data file:
 halloween <- read.csv(here("Data", "Halloween_data_PS2.csv")) # saved the data as halloween
 ```
 
-
 ## Q4. Examine the data frame:
 
 Use two functions:
 
-1) head() -- looks at first 6 values
+1)  head() -- looks at first 6 values
 
 ```{r}
 head(halloween)
 ```
 
-2) glimpse() -- from the tidyverse package like head but shows more values and is oriented horizontally
+2)  glimpse() -- from the tidyverse package like head but shows more values and is oriented horizontally
 
 ```{r}
 glimpse(halloween)
 ```
 
 After examination: clearly there are errors in data entry (capitalization) and a lot of variables assigned as character data that will need to be changed to factor data.
-
 
 ## Q5 & Q6. Assign Data Types:
 
@@ -80,7 +78,6 @@ fixz <-  which(halloween$costume %in% c("zombie", "Zombie")) # find the rows tha
 halloween$costume[fixz] <-  "zombie" # choose one name for the group
 ```
 
-
 Now, the variable needs to be re-factored for the changes to 'update.'
 
 ```{r}
@@ -88,7 +85,7 @@ halloween$costume <- factor(halloween$costume) # re-factor the variable
 levels(halloween$costume) # check to see if all the errors were rectified
 ```
 
-Now back to changing character variables to a factor variable 
+Now back to changing character variables to a factor variable
 
 Costume_type:
 
@@ -104,7 +101,7 @@ Not scary:
 ```{r}
 # find the rows that need to be standardized
 fixns <- which(halloween$Costume_type %in% c("not scary", "Not scary", "notscary")) 
-halloween$Costume_type[fixns] <- "not scary" # choose one name for the entry
+halloween$Costume_type[fixns] <- "Not scary" # choose one name for the entry
 ```
 
 Scary:
@@ -112,7 +109,7 @@ Scary:
 ```{r}
 # find the rows that need to be standardized
 fixs <- which(halloween$Costume_type %in% c("scary", "scaly", "Scary", "scary ")) 
-halloween$Costume_type[fixs] <- "scary" # choose one name for the entry
+halloween$Costume_type[fixs] <- "Scary" # choose one name for the entry
 ```
 
 Now, we can re-factor the variable and see the corrected levels.
@@ -146,7 +143,7 @@ Yes:
 ```{r}
 # find the rows that need to be corrected
 fixy <- which(halloween$sugar_high %in% c("yes", "Yes"))
-halloween$sugar_high[fixy] <- "yes" # choose one name for the entry 
+halloween$sugar_high[fixy] <- "yes" # choose one name for the entry (chose based off the figures later in assignment.)
 ```
 
 Re-factor the variable and see the levels:
@@ -155,5 +152,69 @@ Re-factor the variable and see the levels:
 halloween$sugar_high <- factor(halloween$sugar_high) # re-factor the variable
 levels(halloween$sugar_high) # check to see if all the errors were rectified
 ```
+
+## Q7. Make a scatter plot of min_temp_trick_treat_C vs. age
+
+```{r}
+ggplot(halloween, aes(x = age, y = min_temp_trick_treat_C, shape = Costume_type, colour = Costume_type))+
+  geom_point(size = 5)+
+  xlab("Age of trick-or-treater (years)")+
+  ylab("Minimum temperature while out (C)")+
+  theme_bw()
+```
+
+
+## Q8.
+
+a. Write code that isolates the data for children who are 10 years old or older and who consumed 100 or more grams of Halloween candy
+
+Use filter to select for those constraints:
+
+```{r}
+ten_yrs = halloween |> filter(age >= 10 & g_candy_consumed >= 100)
+```
+
+b. Replicate Fig. 2 using the data frame created above:
+
+```{r}
+# the plot is a histogram of candy_pieces:
+ggplot(ten_yrs, aes(candy_pieces))+
+  geom_histogram()+
+  xlab("Number of candy pieces eaten")+
+  ylab("Count")
+```
+
+
+## Q9. Calculate summary statistics for age and grams of candy consumed grouped by whether or not the child got a sugar high. Include a method that opens a view of the new data as a table and do not create a new object in the environment.
+
+Use group_by, summarise, and View:
+
+```{r}
+halloween |> group_by(sugar_high) |> 
+  summarise( # adding na.rm just for practice (there are no NA's in any of the variables)
+  mean_age = mean(age,na.rm = T),
+  sd_age = sd(age,na.rm = T),
+  mean_gcandy = mean(g_candy_consumed, na.rm = T),
+  sd_gcandy = sd(g_candy_consumed, na.rm = T)) |> 
+  View()
+```
+
+
+## Q10. Recreate Fig. 3:
+
+Use facet_wrap to divide the box plots by sugar_high:
+
+```{r}
+ggplot(halloween, aes(x = Costume_type, y = g_candy_consumed))+
+  geom_boxplot()+
+  geom_point(color = "orange", alpha = 0.75)+ # made my best guess at the transparency -- 0.5 seemed to be too see-through.
+  facet_wrap(~sugar_high)+
+  xlab("Costume type")+
+  ylab("Amount of candy consumed (g)")+
+  theme_bw()
+```
+
+
+## Q13: my halloween costume will not be scary this year and I will not get a sugar high because I am still in season for soccer :)
 
 
