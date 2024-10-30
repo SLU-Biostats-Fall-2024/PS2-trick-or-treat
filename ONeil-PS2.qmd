@@ -1,0 +1,106 @@
+---
+title: "ONeil-PS2.qmd"
+format: html
+editor: visual
+---
+
+## Problem Set 2
+
+setting things up
+
+```{r}
+rm(list=ls())
+library(tidyverse)
+library(here)
+```
+
+import the data and assign a name
+
+```{r}
+halloween <- read.csv(here("data", "Halloween_data_PS2.csv"))
+```
+
+Fix the data set
+
+```{r}
+#change chr data to factor data 
+halloween$sugar_high <- as.factor(halloween$sugar_high)
+halloween$Costume_type <- as.factor(halloween$Costume_type)
+
+```
+
+```{r}
+# change variables to be uniform
+fix <- which(halloween$Costume_type %in% c("Not scary","not scary", "notscary")) #identify the rows that need repair
+
+halloween$Costume_type[fix] <- "Not scary" #reassign the rows
+levels(halloween$Costume_type)
+halloween$Costume_type <- factor(halloween$Costume_type) 
+fix2 <- which(halloween$Costume_type %in% c("scary","Scary", "scaly", "scary ")) #identify the rows that need repair
+
+halloween$Costume_type[fix2] <- "Scary" #reassign the rows
+levels(halloween$Costume_type)
+halloween$Costume_type <- factor(halloween$Costume_type)
+
+fix3 <- which(halloween$sugar_high %in% c("No","no", "NO")) #identify the rows that need repair
+
+halloween$sugar_high[fix3] <- "No" #reassign the rows
+levels(halloween$sugar_high)
+halloween$sugar_high <- factor(halloween$sugar_high)
+fix4<- which(halloween$sugar_high %in% c("yes","Yes")) #identify the rows that need repair
+
+halloween$sugar_high[fix4] <- "Yes" #reassign the rows
+levels(halloween$sugar_high)
+halloween$sugar_high <- factor(halloween$sugar_high)
+```
+
+Examine the data with two functions
+
+```{r}
+halloween %>% group_by(age) %>% 
+   summarise(
+    mean_candy = mean(g_candy_consumed, na.rm = T) ,
+    sd_candy = sd(g_candy_consumed, na.rm = T)
+  )
+halloween %>% group_by(age) %>%
+  count(age)
+```
+
+Making plots
+
+```{r}
+ggplot(halloween, aes(x= age, y= min_temp_trick_treat_C, colour = Costume_type, shape = Costume_type)) + geom_point( size = 5) + xlab("Age of trick-or-treater (years)") + ylab("Minimum temperature while out (C)") + theme_bw() 
+
+```
+
+```{r}
+#histogram 
+ candy <- halloween %>% group_by(age,g_candy_consumed) %>% filter(age == 10, g_candy_consumed >= 100)
+
+ggplot(halloween, aes(x= candy_pieces)) + geom_histogram(binwidth = .5)
+
+```
+
+Means and Standard Deviation
+
+```{r}
+halloween %>% group_by(sugar_high) %>% 
+  summarise(
+    mean_age = mean(age, na.rm = T) ,
+    sd_age = sd(age, na.rm = T))
+
+```
+
+```{r}
+halloween %>% group_by(sugar_high) %>% 
+  summarise(
+    mean_grams = mean(g_candy_consumed, na.rm = T) ,
+    sd_grams = sd(g_candy_consumed, na.rm = T))
+```
+
+Box Plot
+
+```{r}
+ggplot(halloween, aes(x= Costume_type, y= g_candy_consumed)) + geom_boxplot()+ geom_point(size = 4, colour = "orange", alpha = .5) + xlab("Costume Type") + ylab("Amount of Candy Consumed (g)") + theme_bw() + facet_wrap(vars(sugar_high))
+
+```
