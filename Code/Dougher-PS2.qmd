@@ -1,0 +1,24 @@
+---
+title: "Dougher-PS2"
+author: "Margaret Dougher"
+format: html
+editor: visual
+---
+
+## Settings things up
+```{r}
+rm(list=ls()) #clearing R's brain
+library(here) #installing necessary packages
+library(tidyverse)
+```
+## Importing data
+```{r}
+halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+```
+## Changing character variables to factor variables
+```{r}
+halloween$costume <- as.factor(halloween$costume)
+halloween$Costume_type <- as.factor(halloween$Costume_type)
+halloween$sugar_high <- as.factor(halloween$sugar_high)
+```
+
