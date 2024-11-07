@@ -1,0 +1,41 @@
+---
+title: "ps2-feedback"
+format: html
+editor: visual
+---
+
+## PS2 feedback
+
+I'd like to see more commentary in your code on what you are up to. For example, on line 7 you recorded 3) to indicate the step in the problem set you are working on, but you didn't actually write down what you were suppossed to be doing. Think about your .qmd file as something that, if you picked it up again in a year, and had no other supporting information (like the .pdf of the problem set), you would be able to fully understand.
+
+Similarly, in lines 21 - 15 you write code that examines the data, but you never provide commentary (likely after line 25) indicating what you learned from examining the data.
+
+I'd like to see you run `levels()` on your factor variables after you fix them to make sure your repairs worked. For example, after your reassing factors on line 59, you could run `levels(halloween$sugar_high)` to make sure it worked.
+
+Also, you didn't make any attempt to check for errors in the numeric variables.
+
+Work on separating the commentary that belongs outside of code chunks from that which belongs inside of code chunks. Think of what goes outside as the "why" and what goes on the inside as "how". For example, line 78 should go outside of the code chunk as it is explaining why you wrote this code, but it is not explaining how functions work inside of the
+
+Think about spacing your code to improve readability. for example, you have on lines 96 - 100:
+
+```{r}
+halloween |> group_by(sugar_high) |> # separates mean and sd based on if the kids were on a sugar high
+  summarise(mean(age), sd(age), mean(g_candy_consumed), sd(g_candy_consumed)) |> # finds the means and sd for g_candy_consumed and age
+  view() # prints the table in another window
+```
+
+But could have this:
+
+```{r}
+halloween |> group_by(sugar_high) |> # separates mean and sd based on if the kids were on a sugar high
+  summarise(
+    mean(age), 
+    sd(age), 
+    mean(g_candy_consumed), 
+    sd(g_candy_consumed)) |> # finds the means and sd for g_candy_consumed and age
+  view() # prints the table in another window
+```
+
+Which is just a bit easier to read.
+
+Overall though, this is a nice job!
