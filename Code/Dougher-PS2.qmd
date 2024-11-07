@@ -1,0 +1,130 @@
+---
+title: "Dougher-PS2"
+author: "Margaret Dougher"
+format: html
+editor: visual
+---
+
+## Settings things up
+```{r}
+rm(list=ls()) #clearing R's brain
+library(here) #installing necessary packages
+library(tidyverse)
+```
+
+## Importing data
+```{r}
+halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+```
+
+## Changing character variables to factor variables
+```{r}
+halloween$Costume_type <- as.factor(halloween$Costume_type) #changes to factor variable
+halloween$sugar_high <- as.factor(halloween$sugar_high)
+```
+
+## Changing collumn names 
+```{r}
+colnames(halloween)[2] = "costume_type" #changing collumn names
+colnames(halloween)[5] = "candy_consumed"
+```
+
+## Examining the data
+```{r}
+glimpse(halloween)
+str(halloween)
+```
+
+## Changing treatment variables
+```{r}
+levels(halloween$costume_type)
+fix <- which(halloween$costume_type %in% c("not scary", "Not scary", "notscary")) #identify the rows that need repair
+
+halloween$costume_type[fix] <- "Not scary"
+levels(halloween$costume_type)
+halloween$costume_type <- factor(halloween$costume_type) #this just tells R to re-list the levels of my factor now that they have changed
+levels(halloween$costume_type) #viewing the differet levels of the factors
+
+fix <- which(halloween$costume_type %in% c("scaly", "scary ", "Scary", "scary"))
+
+halloween$costume_type[fix] <- "Scary"
+levels(halloween$costume_type)
+halloween$costume_type <- factor(halloween$costume_type)
+levels(halloween$costume_type)
+
+levels(halloween$sugar_high)
+fix <- which(halloween$sugar_high %in% c("no", "No", "NO"))
+
+halloween$sugar_high[fix] <- "No"
+levels(halloween$sugar_high)
+halloween$sugar_high <- factor(halloween$sugar_high)
+levels(halloween$sugar_high)
+
+levels(halloween$sugar_high)
+fix <- which(halloween$sugar_high %in% c("yes", "Yes"))
+
+halloween$sugar_high[fix] <- "Yes"
+levels(halloween$sugar_high)
+halloween$sugar_high <- factor(halloween$sugar_high)
+levels(halloween$sugar_high)
+```
+
+## Making a scatterplot
+```{r}
+ggplot(halloween, aes(x = age, y = min_temp_trick_treat_C, shape = costume_type, colour = costume_type)) + #making shape and colour equal to costume_type makes the points on the graph more visibly different for each level of costume_type
+  geom_point(size = 3) +
+  ylab("Minimum temperature while out (C)") + 
+  xlab("Age of trick-or-treater (years)") + #labeling the x and y axis
+  theme_bw() #gets rid of the grey background
+```
+
+## Using the filter function to isolate specific data
+```{r}
+halloween1 <- filter(halloween, age >= 10, candy_consumed >= 100) #creating a new data set with the appropriate values I filtered
+```
+
+## Creating a count group of data
+```{r}
+halloween_counts <- halloween1 |> group_by(age, candy_pieces, candy_consumed ) |> #pulls only those three categories into a new data set
+  summarize(
+    count = length(candy_pieces) #determines the number of vectors/factors
+  )
+```
+
+## Plotting a histogram
+```{r}
+ggplot(halloween_counts, aes(x = candy_pieces)) +
+  geom_histogram(bins = 30) + #alters width of bars
+  xlab("Number of candy pieces eaten") #alters x-axis label
+  
+```
+
+## Calculating summary statistics showing mean and standard deviation for age and candy_consumed, broken down by sugar_high
+```{r}
+halloween |> group_by(sugar_high) |> #grabs sugar_high
+  summarise(mean(age)) |> #gives the mean
+  View() #allows me to view in a seperate table
+
+halloween |> group_by(sugar_high) |>
+  summarise(sd(age)) |> #gives the standard deviation
+  View()
+
+halloween |> group_by(sugar_high) |>
+  summarise(mean(candy_consumed)) |>
+  View()
+
+halloween |> group_by(sugar_high) |>
+  summarise(sd(candy_consumed)) |>
+  View()
+```
+
+## Creating a box and whisker plot
+```{r}
+ggplot(halloween, aes(x = costume_type, y = candy_consumed)) +
+  geom_boxplot() +
+  facet_wrap(~sugar_high) +
+  geom_point(size = 2, colour = 'orange', alpha = 0.8) +
+  xlab("Costume type") +
+  ylab("Amount of Candy Consumed (g)") +
+  theme_bw()
+```
