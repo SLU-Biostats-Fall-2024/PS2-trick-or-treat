@@ -1,0 +1,37 @@
+---
+title: "PS2-feedback"
+format: html
+editor: visual
+---
+
+## PS 2 Feedback
+
+I'd like to see you put more commentary in your code about what you learn from various code chunks. For example, in lines 25 - 29, you wrote code to examine the data, but what did you learn from examining the data? I put an example of what I'm looking for in the General Feedback portion of the github project with the key.
+
+Also, lines 47 - 49 should probably be included outside of a code chunk and not inside. Keep the comments within the code chunks to aspects of the code (the how rather than the why).
+
+Why did you make costume into a factor variable? As you look through it (using str, glimpse, and just looking at the data) you should see that while there are a few repeat names, there are lots of different variations on costumes.
+
+Think about readability in your code. For example, you have this code chunk at lines 149 - 152
+
+```{r}
+Halloween |>
+  group_by(sugar_high) |>
+  summarise(mean.age = mean(age), stdev.age = sd(age), mean.gcandy = mean(g_candy_consumed), stdev.gcandy = sd(g_candy_consumed)) |>
+  View()
+```
+
+We can make it more readable by adjusting the spacing and where you hit return on your keyboard to make the code easier to follow, as this:
+
+```{r}
+Halloween |>
+  group_by(sugar_high) |>
+  summarise(
+    mean.age = mean(age), 
+    stdev.age = sd(age), 
+    mean.gcandy = mean(g_candy_consumed), 
+    stdev.gcandy = sd(g_candy_consumed)) |>
+  View()
+```
+
+Your box and whisker plot looks good, but notice that in my example, the facet_wrap by sugar_high has "no" and "yes" as the levels of the factor for sugar_high rather than "No" and "Yes". Subtle difference there.
