@@ -1,0 +1,16 @@
+---
+title: "ps2-feedback"
+format: html
+editor: visual
+---
+
+## PS2 feedback
+You are doing a nice job providing commentary on what you are doing and why. However, I'm puzzled why, after such a good job examining your data, you decided to make costume a factor variable. When you look at it, you can see that it is just a description of what each kid was wearing but not really "categories" of costumes. Whenever you see a factor variable with 46 levels you should pause and think.
+
+It should also be a hint to you that pulling in stringr, which we have not learned in this class, was a red flag that what you were doing was overly complicated relative to what we have learned.
+
+You didn't do any error checking on any of the numeric variables!
+
+I love your costume history from past years!
+
+Overall, this was a great job.
