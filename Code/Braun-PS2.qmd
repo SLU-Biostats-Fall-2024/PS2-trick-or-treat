@@ -4,7 +4,8 @@ format: html
 editor: visual
 ---
 
-3)
+3)  
+
 ```{r}
 rm(list=ls()) # clear the environment
 library(tidyverse) # import tidyverse package
@@ -15,7 +16,8 @@ library(here) # import here package
 halloween <- read.csv(here("Data", "Halloween_data_PS2.csv")) # import the data set
 ```
 
-4) Examine the data set using `glimpse()` and `str()`
+4)  Examine the data set using `glimpse()` and `str()`
+
 ```{r}
 glimpse(halloween) # allows us to see the column title, data type, and the first few data entries
 
@@ -23,6 +25,7 @@ str(halloween) # allows us to see the column title, data type, and the first few
 ```
 
 5 and 6) convert costume_type to a factor variable and fix the "scary" and "not scary" factors
+
 ```{r}
 halloween$Costume_type <- as.factor(halloween$Costume_type)
 
@@ -40,6 +43,7 @@ halloween$Costume_type <- factor(halloween$Costume_type) # reassign the factors
 ```
 
 change sugar_high to a factor variable and change "yes" to "Yes" and "no"/"NO" to "No"
+
 ```{r}
 halloween$sugar_high <- as.factor(halloween$sugar_high) # turn sugar_high into a factor
 
@@ -55,7 +59,8 @@ halloween$sugar_high[fix_sugarHigh_no] <- "No" # change "no" and "NO" rows to "N
 halloween$sugar_high <- factor(halloween$sugar_high) # reassign the factors
 ```
 
-7) Create a scatterplot of min temp and age. We need to make the points different colors, shapes, and increase their size. Change the x and y axis titles and add a caption.
+7)  Create a scatterplot of min temp and age. We need to make the points different colors, shapes, and increase their size. Change the x and y axis titles and add a caption.
+
 ```{r}
 ggplot(halloween, aes(y=min_temp_trick_treat_C, x=age, color = Costume_type)) + 
   geom_point(aes(shape = Costume_type), size = 5) + # make points bigger and color by costume_type
@@ -65,14 +70,16 @@ ggplot(halloween, aes(y=min_temp_trick_treat_C, x=age, color = Costume_type)) +
   theme(plot.caption = element_text(face = "italic", hjust = 0)) # alter caption
 ```
 
-8) 
+8)  
+
 ```{r}
 over_10 <- halloween |> 
   filter(age >= 10, g_candy_consumed >= 100) 
 # creates a new data frame that only keeps kids aged 10 or older and kids who have consumed 100 g of sugar or more
 ```
 
-Create a histogram that counts the amount of candy (at least 100 g) that kids 10 and over have eaten. Change the x and y axis titles and add a caption. 
+Create a histogram that counts the amount of candy (at least 100 g) that kids 10 and over have eaten. Change the x and y axis titles and add a caption.
+
 ```{r}
 ggplot(over_10, aes(candy_pieces)) +
   geom_histogram() +
@@ -84,7 +91,8 @@ numbers of pieces of candy.
   theme(plot.caption = element_text(face = "italic", hjust = 0)) # alter caption
 ```
 
-9) Find the mean and sd of age and grams of candy consumed based on whether they were on a sugar high
+9)  Find the mean and sd of age and grams of candy consumed based on whether they were on a sugar high
+
 ```{r}
 halloween |> group_by(sugar_high) |> # separates mean and sd based on if the kids were on a sugar high
   summarise(mean(age), sd(age), mean(g_candy_consumed), sd(g_candy_consumed)) |> # finds the means and sd for g_candy_consumed and age
@@ -92,6 +100,7 @@ halloween |> group_by(sugar_high) |> # separates mean and sd based on if the kid
 ```
 
 10) Create a box and whisker plot using costume type as the x variable and grams of candy consumed as the y variable. the plot will be grouped by whether or not the kids were on a sugar high. Change the transperancy of the points, the x and y axis titles and add a caption
+
 ```{r}
 ggplot(halloween, aes(x = Costume_type, y = g_candy_consumed)) +
   geom_boxplot() +
@@ -103,4 +112,3 @@ ggplot(halloween, aes(x = Costume_type, y = g_candy_consumed)) +
 costume separated according to whether the child experienced a resulting sugar high (“no” vs. “yes”).") + # create caption
   theme(plot.caption = element_text(face = "italic", hjust = 0)) # alter caption
 ```
-
