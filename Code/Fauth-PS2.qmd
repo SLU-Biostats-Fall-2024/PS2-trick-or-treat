@@ -163,10 +163,9 @@ ggplot(halloween, aes(x = age, y = min_temp_trick_treat_C, shape = Costume_type,
   theme_bw()
 ```
 
-
 ## Q8.
 
-a. Write code that isolates the data for children who are 10 years old or older and who consumed 100 or more grams of Halloween candy
+a.  Write code that isolates the data for children who are 10 years old or older and who consumed 100 or more grams of Halloween candy
 
 Use filter to select for those constraints:
 
@@ -174,7 +173,7 @@ Use filter to select for those constraints:
 ten_yrs = halloween |> filter(age >= 10 & g_candy_consumed >= 100)
 ```
 
-b. Replicate Fig. 2 using the data frame created above:
+b.  Replicate Fig. 2 using the data frame created above:
 
 ```{r}
 # the plot is a histogram of candy_pieces:
@@ -183,7 +182,6 @@ ggplot(ten_yrs, aes(candy_pieces))+
   xlab("Number of candy pieces eaten")+
   ylab("Count")
 ```
-
 
 ## Q9. Calculate summary statistics for age and grams of candy consumed grouped by whether or not the child got a sugar high. Include a method that opens a view of the new data as a table and do not create a new object in the environment.
 
@@ -199,7 +197,6 @@ halloween |> group_by(sugar_high) |>
   View()
 ```
 
-
 ## Q10. Recreate Fig. 3:
 
 Use facet_wrap to divide the box plots by sugar_high:
@@ -214,7 +211,4 @@ ggplot(halloween, aes(x = Costume_type, y = g_candy_consumed))+
   theme_bw()
 ```
 
-
 ## Q13: my halloween costume will not be scary this year and I will not get a sugar high because I am still in season for soccer :)
-
-
