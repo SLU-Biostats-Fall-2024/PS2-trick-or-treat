@@ -1,0 +1,172 @@
+---
+title: "Problem Set 2 - Liz Anderson"
+format: html
+editor: visual
+---
+
+# Problem Set 2
+
+Set up
+
+```{r}
+rm(list=ls())
+library(here)
+library(tidyverse)
+```
+
+Read in the data
+
+```{r}
+Halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+```
+
+## 4. Examine the dataset
+
+```{r}
+glimpse(Halloween)
+str(Halloween)
+
+```
+
+## 5. Assign data types
+
+```{r}
+#Costume and costume_type should be factor. sugar_high could be binary(logical) or factor
+
+Halloween$costume <- as.factor(Halloween$costume)
+Halloween$Costume_type <- as.factor(Halloween$Costume_type)
+Halloween$sugar_high <- as.factor(Halloween$sugar_high)
+```
+
+## 6. Fix errors in the data
+
+```{r}
+# First do the costume column
+
+levels(Halloween$costume) 
+#See what needs to be fixed with this and by looking at the data frame and using command F due to how many levels there are. 
+
+# need to fix: witch, unicorn, princess, zombie, 
+
+fix1 <- which(Halloween$costume %in% c("witch ", "Witch"))
+Halloween$costume[fix1] <- "Witch"
+Halloween$costume <- factor(Halloween$costume)
+
+fix1.5 <- which(Halloween$costume == "witch")
+Halloween$costume[fix1.5] <- "Witch"
+Halloween$costume <- factor(Halloween$costume)
+
+fix2 <- which(Halloween$costume %in% c("unicorn", "Unicorn"))
+Halloween$costume[fix2] <- "Unicorn"
+Halloween$costume <- factor(Halloween$costume)
+
+fix3 <- which(Halloween$costume %in% c("princess", "Princess"))
+Halloween$costume[fix3] <- "Princess"
+Halloween$costume <- factor(Halloween$costume)
+
+fix4 <- which(Halloween$costume %in% c("zombie", "Zombie"))
+Halloween$costume[fix4] <- "Zombie"
+Halloween$costume <- factor(Halloween$costume)
+```
+
+```{r}
+levels(Halloween$Costume_type)
+#Need to fix: Not scary, Scary
+
+fixNS <- which(Halloween$Costume_type %in% c("not scary", "Not scary", "notscary"))
+Halloween$Costume_type[fixNS] <- "Not scary"
+Halloween$Costume_type <- factor(Halloween$Costume_type)
+
+FixS <- which(Halloween$Costume_type %in% c("scaly", "scary", "Scary", "scary "))
+Halloween$Costume_type[FixS] <- "Scary"
+Halloween$Costume_type <- factor(Halloween$Costume_type)
+```
+
+```{r}
+levels(Halloween$sugar_high)
+#Need to fix the No and Yes
+
+FixNo <- which(Halloween$sugar_high %in% c("no", "No", "NO"))
+Halloween$sugar_high[FixNo] <- "No"
+Halloween$sugar_high <- factor(Halloween$sugar_high)
+
+FixYes <- which(Halloween$sugar_high == "yes")
+Halloween$sugar_high[FixYes] <- "Yes"
+Halloween$sugar_high <- factor(Halloween$sugar_high)
+```
+
+```{r}
+glimpse(Halloween)
+```
+
+## 7. Make a scatterplot
+
+Make a scatterplot with the minimum temperature that kids will trick or treat and age. Also have the points be characterized different based on costume type.
+
+```{r}
+ggplot(Halloween, aes(x=age, y=min_temp_trick_treat_C, colour = Costume_type, shape = Costume_type))+
+  geom_point(size=5)+
+  xlab("Age of trick-or-treater (years)")+
+  ylab("Minimum temperature while out (C)")+
+  theme_bw()
+
+# Specified dataframe, then the x and y variables. Then to characterize the points shape and color by another variable (Costume_type). Then specified point size. Next customized the x and y variable titles, then finally got rid of the gray background. 
+# Success!
+
+# Figure 1. "Minimum temperature that kids will trick-or-treat before going home as a function of each child’s age and costume type."
+```
+
+## 8. Make a histogram
+
+First, isolate kids 10+ age and who consumed 100 or more grams of candy
+
+```{r}
+Q8 <- Halloween|>
+  filter(age >= 10, g_candy_consumed >= 100)
+#Create a new dataframe to store this info. Use the Halloween dataframe. Filter based on age and grams of candy consumed so only returns the rows with values that meet the rules specified. 
+```
+
+Make a histogram with counts of number of kids who ate a certain number of candy pieces.
+
+```{r}
+ggplot(Q8, aes(x = candy_pieces))+
+  geom_histogram()+
+  xlab("Number of candy pieces eaten")+
+  ylab("Count")
+
+#Specified to use the filtered dataframe, Q8, from above code. Specified the x variable is candy pieces (only need to say the x variable for a histogram). Then told R to plot a histogram and what to name the x and y axes.
+
+# Figure 2. "Count of number of children (age 10 and older and who consumed at least 100 grams of candy) eating different numbers of pieces of candy."
+```
+
+## 9. Summary Stats
+
+Calculate mean and standard deviation for age and grams of candy consumed broken down by whether child experienced a sugar high.
+
+```{r}
+# Need to use group_by for sugar_high, then find the mean and standard deviation for the two variables
+
+Halloween |>
+  group_by(sugar_high) |>
+  summarise(mean.age = mean(age), stdev.age = sd(age), mean.gcandy = mean(g_candy_consumed), stdev.gcandy = sd(g_candy_consumed)) |>
+  View()
+
+```
+
+## 10. Box and whiskers plot
+
+Use the variables costume type (x), amount of candy consumed (y) and whether or not a sugar high was experienced (facet wrap) to make a box and whiskers plot.
+
+```{r}
+ggplot(Halloween, aes(x = Costume_type, y = g_candy_consumed))+
+  geom_boxplot()+
+  geom_point(size = 2, colour="orange", alpha = 0.8)+
+  xlab("Costume type")+
+  ylab("Amount of candy consumed (g)")+
+  facet_wrap(~sugar_high)+
+  theme_bw()
+
+# Use the Halloween dataframe with the specified x and y variables. Then add a boxplot and points from the dataframe, with the specified size, color, and transparency. Make the axes titled as written after xlab and ylab. Use facet_wrap to have 2 boxplots based on the variable sugar_high, and get rid of the gray background. 
+
+# Figure 3. "Box and whisker plot showing amount of candy consumed by children wearing different types of Halloween costume separated according to whether the child experienced a resulting sugar high (“no” vs. “yes”)."
+```
