@@ -1,0 +1,21 @@
+---
+title: "PS2 feedback"
+format: html
+editor: visual
+---
+
+## PS2 feedback
+Thanks for paying attention to how to name your repo. Few folks did that little detail properly!
+
+I'd like to see you do more to provide commentary after you execute a code chunk to write down what is important/what you learned/what you need to know based on the output of whatever functions you run.
+
+Remember that not all character data should be factor data - only if the data are indicative of categories for a variable. So I don't think costume should be a factor.
+
+You did a good job error checking your factor variables, but didn't do any error checking of your numeric variables.
+
+Line 75 - you have an issue here with "size = 10" that shows up in the legend in your plot. Take a look at the key for more details.
+
+Lines 102 - 112 - you were suppossed to make the table open in a new tab. You needed to add `View()` at the end of your piping.
+
+Overall though, good job!
+
