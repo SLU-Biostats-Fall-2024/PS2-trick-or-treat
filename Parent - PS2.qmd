@@ -1,0 +1,141 @@
+---
+title: "Parent - PS2."
+Name: Alexis Parent 
+Date: 10/26/2024
+format: html
+editor: visual
+---
+
+```{r}
+# set things up in R 
+rm(list=ls())
+library(ggplot2)
+library(tidyverse)
+library(here)
+```
+
+```{r}
+# load in csv file 
+halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+```
+
+```{r}
+# examine the dataset
+glimpse(halloween)
+view(halloween)
+```
+
+```{r}
+# change column headings 
+colnames(halloween)[colnames(halloween) == "Costume_type"] <- "costume_type"
+
+```
+
+```{r}
+# fix errors in dataset 
+fix <- which(halloween$costume == "Dracula")
+halloween$costume[fix] <- "dracula"
+
+fix2 <- which(halloween$costume == "Mermaid")
+halloween$costume[fix2] <- "mermaid"
+
+fix3 <- which(halloween$costume == "Unicorn")
+halloween$costume[fix3] <- "unicorn"
+
+fix4 <- which(halloween$costume == "Zombie")
+halloween$costume[fix4] <- "zombie"
+
+fix5 <- which(halloween$costume == "Witch")
+halloween$costume[fix5] <- "witch"
+
+fix6 <- which(halloween$costume == "Ernie")
+halloween$costume[fix6] <- "ernie"
+
+fix7 <- which(halloween$costume == "Princess")
+halloween$costume[fix7] <- "princess"
+
+fix8 <- which(halloween$costume == "Rabbit")
+halloween$costume[fix8] <- "rabbit"
+
+fix9 <- which(halloween$costume == "Sponge Bob")
+halloween$costume[fix9] <- "sponge bob"
+
+# fix costume type 
+fix10 <- which(halloween$Costume_type %in% c("Not scary", "notscary"))
+halloween$Costume_type[fix10] <- "not scary"
+
+fix11 <- which(halloween$Costume_type  %in% c("Scary", "scaly", "scary "))
+halloween$Costume_type[fix11] <- "scary"
+
+fix12 <- which(halloween$Costume_type == "Uncertain")
+halloween$Costume_type[fix12] <- "uncertain"
+
+#fix sugar high 
+fix13 <- which(halloween$sugar_high == "Yes")
+halloween$sugar_high[fix13] <- "yes"
+
+fix14 <- which(halloween$sugar_high %in% c("No", "NO"))
+halloween$sugar_high[fix14] <- "no"
+
+view(halloween)
+```
+
+```{r}
+#assign data types
+halloween$costume <- factor(halloween$costume)
+levels(halloween$costume)
+
+halloween$Costume_type <- factor(halloween$Costume_type)
+levels(halloween$Costume_type)
+
+halloween$sugar_high <- factor(halloween$sugar_high)
+levels(halloween$sugar_high)
+
+```
+
+```{r}
+#Make a scatterplot of min_temp_trick_treat_C vs. age 
+ggplot(halloween, aes(x = age, y = min_temp_trick_treat_C, shape = Costume_type, color = Costume_type)) +
+  geom_point(size = 3) +
+  scale_shape_manual(values = c(16,17,15)) +
+  labs(x = "Age of trick-or-treater (years)", y = "Minimum temperature while out(C)")
+    theme_bw() 
+```
+
+```{r}
+# Next write code that isolates the data for children who are 10 years old or older and who consumed 100 or more grams of Halloween candy. Use the resulting data to plot a histogram showing the a count of the number of kids who each ate certain numbers of pieces of candy. Reproduce Figure 2 as closely as possible.
+
+
+candy_data_filtered <- halloween |> filter(halloween$age >= 10, 
+                                           halloween$g_candy_consumed >= 100) |> group_by(candy_pieces)
+
+
+view(candy_data_filtered)
+
+ggplot(candy_data_filtered, aes(x = candy_pieces)) +
+  geom_histogram() + 
+  labs(x = "Number of candy pieces eaten", y = "Count")
+```
+
+```{r}
+# Next calculate some summary statistics that show the mean and standard deviation for the following variables broken down by whether or not the child experienced a sugar high. Include in your code a method that opens a view of the resulting data as a new table view in RStudio. Do not create a new object in your Environment.
+# age
+# grams of candy consumed
+view(halloween |> group_by(sugar_high) |> summarise(mean_age = mean(age), mean_candy_g = mean(g_candy_consumed), sd_age = sd(age), sd_candy_g = sd(g_candy_consumed)))
+
+
+```
+
+```{r}
+# figure replication - box and whisker
+ggplot(halloween , aes(x = Costume_type, y = g_candy_consumed)) +
+  geom_boxplot() +
+  geom_point(size = 2, colour = "orange") +
+  xlab("Costume type") +
+  ylab("Amount of candy consumed (g)") +
+  facet_wrap(~ sugar_high, ncol = 2) +
+  theme_bw() 
+  
+  
+ 
+```
