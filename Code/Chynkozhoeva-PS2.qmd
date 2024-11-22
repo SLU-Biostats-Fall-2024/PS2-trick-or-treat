@@ -1,0 +1,190 @@
+---
+title: "Chynkozhoeva-PS2"
+format: html
+editor: visual
+---
+
+Set things up:
+
+```{r}
+rm(list = ls()) #clears the environment
+
+#library() opens specific packages in R and enables all the functions that they include 
+library(tidyverse)
+library(here)
+```
+
+Import the data set:
+
+```{r}
+Halloween <- read.csv(here("Data", "Halloween_data_PS2.csv"))
+```
+
+Examine the data using glimpse(), summary() and str():
+
+```{r}
+glimpse(Halloween) #provides easily readable view of the variables with identified data types 
+```
+
+```{r}
+summary(Halloween) #provides a statistical overview
+```
+
+```{r}
+str(Halloween) #provides a structural overview of the dataset
+```
+
+After looking at the types of variables, I decided to convert the <chr> data into factors because 'Costume_type' and 'sugar_high' naturally represent distinct categories, making them suitable for factor analysis in R. However, I kept 'costume' as a character variable since it is more descriptive of the specific costume a child was wearing rather than serving as a category for analysis.
+
+```{r}
+Halloween$Costume_type <- as.factor(Halloween$Costume_type)
+Halloween$sugar_high <- as.factor(Halloween$sugar_high
+)
+
+#as.factor() converted <chr> variables into factors
+```
+
+##Fix any errors you see in the dataset:
+
+The original data set provides inconsistencies in data entries, which can cause a problem for plotting appropriate graphs and running various analysis. 
+
+Below are some steps I took to make sure that the data is clear, consistent, and R readable:
+
+##Check out the formatting of the data.
+
+First, I looked at the column headers to check if they have major inconsistencies, or if they include spaces in between two words, which I would then change to underscores.
+
+This data set followed the rules and did not have any spaces in column names. However, I made a small change in one of the column names that is later described in the code chunk.
+
+```{r}
+colnames(Halloween) [colnames(Halloween) == "Costume_type"] <- "costume_type"
+
+#since the majority of the column names are written in lowercase, I chose to change the only uppercase column to make it look more consistent, although it was not a requirement.
+```
+
+##Check for missing values.
+
+This data set did not include any NAs or numerical equivalents.
+
+##Fix data inconistencies. Standardize the representation of values.
+
+First, check for all the unique entries to see variations and inconsistencies in the two factor variables.
+
+```{r}
+unique(Halloween$costume_type) #unique() extracts all the unique values from the 'costume_type' column on the Halloween data set. 
+```
+The results of the unique() function provided us with 8 levels, which are 8 unique values.
+
+Similar code was ran for 'sugar_high' column:
+
+```{r}
+unique(Halloween$sugar_high)
+```
+
+Then, fix all the entry variations by making them uniform. You can do that by using fix() and which() functions.
+
+```{r}
+#fix the levels in 'costume_type' column
+
+fix_not_scary <- which(Halloween$costume_type %in% 
+                         c("notscary", "not scary"))
+Halloween$costume_type [fix_not_scary] <- "Not scary"
+  
+  
+fix_scary <- which(Halloween$costume_type %in% c("scaly","scary", "scary "))
+Halloween$costume_type [fix_scary] <- "Scary"
+
+#all variations were made uniform into one entry - 'Scary'  
+```
+
+```{r}
+#fix levels in the 'sugar_high' category to ensure consistent representation
+
+fix_sugar_no <- which(Halloween$sugar_high %in% c("No", "NO"))
+Halloween$sugar_high[fix_sugar_no] <- "no"
+
+fix_sugar_yes <- which(Halloween$sugar_high == "Yes")
+Halloween$sugar_high[fix_sugar_yes] <- "yes"
+
+```
+
+##Make a scatterplot of min_temp_trick_treat_C vs. age and write code that recreates Figure 1.
+
+Figure 1 depicts minimum temperature that kids will trick-or-treat before going home as a function of each child's age and costume type.
+
+```{r}
+ggplot(Halloween, aes(x = age, y = min_temp_trick_treat_C, colour = costume_type, shape = costume_type)) +
+  geom_point(size = 4) +
+  scale_color_manual(values = c("Not scary" = "coral", "Scary" = "forestgreen", "Uncertain" = "cornflowerblue")) +
+  xlab("Age of trick-or-tteater (years)") +
+  ylab("Minimum temperature while out (C)") +
+  theme_bw()
+
+#After creating a simple scatterplot, I played around with different values for size and colors.
+
+#xlab() and ylab() functions are needed to label x- and y- axis.
+
+#scale_color_manual(values = c(...)) was used to assign specific colors to specific categories/fata entries.
+
+```
+
+##Next write code that isolates the data for children who are 10 years old or older and who consumed 100 or more grams of Halloween candy. Use the resulting data to plot a histogram showing the a count of the number of kids who each ate certain numbers of pieces of candy. 
+
+Figure 2 shows count of number of children (age 10 and older and who consumed at least 100 grams of candy) eating different numbers of pieces of candy. 
+
+```{r}
+Figure_2 <- Halloween |>
+  filter(age >= 10, g_candy_consumed >= 100)
+
+ggplot(Figure_2, aes(x = candy_pieces)) +
+  geom_histogram(binwidth = 0.5) +
+  xlab("Number of candy pieces eaten") +
+  ylab("Count") 
+  
+#to indicate '10 years or greater' you can either use '>=' sign or write the following: "age > 9" because it also means the same thing.
+
+#theme_bw() is not used because the original graph remained grey
+
+```
+
+##Next calculate some summary statistics that show the mean and standard deviation for the following variables broken down by whether or not the child experienced a sugar high. Include in your code a method that opens a view of the resulting data as a new table view in RStudio. Do not create a new object in your Environment. • age • grams of candy consumed
+
+```{r}
+Halloween |>
+  group_by(sugar_high) |>
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    sd_age = sd(age, na.rm = TRUE),
+    mean_g_candy_consumed = mean(g_candy_consumed, na.rm = TRUE),
+    sd_g_candy_consumed = sd(g_candy_consumed, na.rm = TRUE)
+  ) 
+
+#'mean_age = mean(age, na.rm = TRUE)' - code chunk is used to calculate mean for 'age' column, also deleting any NA values.
+#almost the same code is used to find standard deviation for the same column.  
+
+```
+
+##Figure 3: Box-and-whisker plot showing amount of candy consumed by children wearing different types of Halloween costume separated according to wether the child experienced a resulting sugar high.
+
+```{r}
+ggplot(Halloween, aes(x = costume_type, y = g_candy_consumed)) +
+  geom_boxplot() +
+  geom_point(size = 2, colour = 'orange', alpha = 0.5) +
+  xlab("Costume type") +
+  ylab("Amount of candy consumed (g)") +
+  theme_bw() +
+  facet_wrap(~sugar_high)
+
+#I played around with the point size
+#theme_bw() get rid of the grey background
+#facet_wrap() divides the data by the selected treatment into two boxplots
+```
+
+##11. When you have finished, commit all of your changes and open a pull request in the forked repository to indicate proposed changes to the project code. Then push your project to your own GitHub repository. 
+Done!
+
+##12. Submit your assignment by pasting the link to your forked GitHub repository on the assignment page on Canvas. 
+Done!
+
+##13. Contemplate what your Halloween costume will be this year! Scary, or not? And will you get a sugar high?
+Not scary! I am planning to have an interactive costume. I will be a 'green flag' (fully green dressed) and will be holding postit type notes and marker for people to write what they consider a 'green flag' in others and then, I will stick those answers on my green sweatshirt. 
