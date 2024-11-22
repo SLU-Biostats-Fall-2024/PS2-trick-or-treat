@@ -1,0 +1,16 @@
+---
+title: "PS2 feedback"
+format: html
+editor: visual
+---
+
+## PS2 feedback
+I like that on line 38 you wrote some commentary on what you lreaned from data examiniation. YOu might also write some basic stuff like "I see that my data includes 49 rows and 7 variables, of which 2 look to be factor, 1 character, and the rest numeric."
+
+Why did you make the costume column into factor? With that much variation, it is likely just a description of the outfit and not meant as categories. Any time you get 46 factor levels you should be suspicious!
+
+You did a great job fixing errors in the factor variables, but did not do any error checking of the numeric variables...
+
+Think about how you use markdown. Your line 186 shows up as a very big block of header text. Perhaps just the question numbers should be made as headers, followed by a (non-header) description of the question for readability.
+
+Nice job!
